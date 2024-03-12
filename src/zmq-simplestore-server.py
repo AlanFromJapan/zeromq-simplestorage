@@ -4,13 +4,18 @@ import zmq
 import logging
 import json
 import base64
+import datetime
 from config import myconfig
 
+
+############################ CONSTANTS-ish #################################
+
+ACK = "{ \"message\": \"ACK\"}"
 
 ############################ BEFORE ANYTHING ELSE #################################
 #logging
 logging.basicConfig(filename=myconfig["logfile"], level=myconfig.get("log level", logging.INFO))
-logging.info("Starting app")
+logging.info("Starting app..")
 
 #make sure upload folder exists
 if not os.path.exists(myconfig["upload folder"]):
@@ -21,31 +26,43 @@ context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:%d" % myconfig["app_port"])
 
-while True:
+is_running = True
+
+############################ MAIN LOOP #################################
+while is_running:
     #  Wait for next request from client
     msg = socket.recv()
-    print("Received request: %s" % msg)
+    logging.debug ("Received request: %s" % msg)
 
     j = json.loads(msg)
     if j["message"] == "quit":
         #  Send reply back to client
-        socket.send_string("BYE")
-        print("Shutting down Q")
+        socket.send_string(ACK)
+        logging.warning("BYE > Shutting down Q")
+        is_running = False
         break
 
     if j["message"] == "ping":
-        socket.send_string("PONG")
-        print("PONG")
+        socket.send_string(ACK)
+        logging.info("PONG")
         continue
 
     if j["message"] == "store":
         contents = j["body"]["content"]
-        
-        print(contents)
 
-        with open(os.path.join(myconfig["upload folder"], os.path.basename(str(j["body"]["filename"]))), "wb") as f:
+        #add a leading timestamp to the filename
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+
+        #filename storage location, use basename to avoid path traversal
+        output_filename = os.path.join(myconfig["upload folder"], timestamp + "_" + os.path.basename(str(j["body"]["filename"])))
+
+        logging.warning(f'Storing file [{j["body"]["filename"]}] as [{output_filename}]')
+
+        with open(output_filename, "wb") as f:
             f.write(base64.b64decode(contents.encode()))
     
         #  Send reply back to client
-        socket.send_string("SAVED")
-        print("SAVED")
+        socket.send_string(ACK)
+
+
+logging.info("Application is shutting down.")
