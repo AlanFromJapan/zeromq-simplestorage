@@ -6,5 +6,7 @@ myconfig = {
 
     "logfile" : "/tmp/zmq-logs.log",
 
-    "log level" : logging.INFO
+    "log level" : logging.INFO,
+
+    "log format" : '%(asctime)s - %(levelname)s - %(message)s'
 } 
