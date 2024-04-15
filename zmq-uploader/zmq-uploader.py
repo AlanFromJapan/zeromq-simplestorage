@@ -1,10 +1,8 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QFileDialog, QMessageBox
-from PyQt5.QtGui import QIcon,QPixmap
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMessageBox
+from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
-import PIL
 import tempfile
 
 import previewer
@@ -29,6 +27,7 @@ class UIMain():
         self.ui.btnZMQDropHead.clicked.connect(self.zmqDropHead)
 
         self.previewers.append(previewer.PreviewerImage())
+        self.previewers.append(previewer.PreviewerGRBL())
 
         self.ui.lblServerURL.setText(config.config["zmq_server"])
 
@@ -74,9 +73,11 @@ class UIMain():
             #try to make a preview
             try:
                 self.ui.lblPreview.clear()
+                previewed = False
 
                 for p in self.previewers:
                     if fileName.split('.')[-1] in p.capableExt():
+                        previewed = True
                         imgPIL = p.preview(fileName)
 
                         #PIL install broken, but this should work
@@ -84,16 +85,15 @@ class UIMain():
 
                         #forgive me for this
                         with tempfile.TemporaryDirectory() as temp:
-                            fname = os.path.join(temp, "temp.jpg")
-                            try:
-                                imgPIL.save(fname)
-                                self.ui.lblPreview.setScaledContents(True)
-                                self.ui.lblPreview.setPixmap(QPixmap(fname))
-                            finally:
-                                os.remove(fname)
+                            fname = os.path.join(temp, "temp.png")
+                            print(f"Saving temp preview image to [{fname}]")
+                            imgPIL.save(fname)
+                            self.ui.lblPreview.setScaledContents(True)
+                            self.ui.lblPreview.setPixmap(QPixmap(fname))
 
                         break
-                
+                if not previewed:
+                    print("No previewer found.")
             except Exception as e:
                 print(e)
 
