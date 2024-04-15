@@ -25,6 +25,8 @@ class UIMain():
         self.ui.actionPick_a_File.triggered.connect(self.pickAFile)
         self.ui.btnZMQStatus.clicked.connect(self.zmqStatus)
         self.ui.btnZMQList.clicked.connect(self.zmqList)
+        self.ui.btnStore.clicked.connect(self.zmqStoreFile)
+        self.ui.btnZMQDropHead.clicked.connect(self.zmqDropHead)
 
         self.previewers.append(previewer.PreviewerImage())
 
@@ -46,6 +48,18 @@ class UIMain():
 
     def zmqList(self):
         QMessageBox.information(self.ui, "ZMQ current list", zmqcommands.list())
+
+    def zmqStoreFile(self):
+        if self.currentFile is None:
+            QMessageBox.warning(self.ui, "No file selected", "Please select a file first")
+            return        
+        QMessageBox.information(self.ui, "ZMQ upload", zmqcommands.storeFile(self.currentFile))
+
+    
+    def zmqDropHead(self):
+        if QMessageBox.Yes == QMessageBox.question(self.ui, "Confirmation", "Are you sure you want to drop the head of the MQ?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No):
+            #let's do it
+            zmqcommands.dropHead()
 
     def pickAFile(self):
         options = QFileDialog.Options()
