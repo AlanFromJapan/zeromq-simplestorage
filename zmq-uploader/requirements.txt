@@ -1,0 +1,4 @@
+pyzmq
+PyQt5
+grbl2image
+pillow

@@ -2,7 +2,7 @@
 /include
 /lib64
 /pyvenv.cfg
-/src/config.py
+config.py
 /Scripts
 
 # Byte-compiled / optimized / DLL files
