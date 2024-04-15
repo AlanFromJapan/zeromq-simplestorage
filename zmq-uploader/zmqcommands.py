@@ -1,0 +1,35 @@
+import zmq
+import config
+
+
+__MSG_PING = """{
+    "message": "ping"
+}
+""" 
+
+__MSG_LIST = """{
+    "message": "list"
+}
+""" 
+context = zmq.Context()
+
+#  Socket to talk to server
+socket = context.socket(zmq.REQ)
+socket.connect(config.config["zmq_server"])
+
+
+def ping():
+    print("Sending request %s …" % __MSG_PING)
+    socket.send_string(__MSG_PING)
+    message = socket.recv()
+    print(f"Received reply [ {message} ]")
+    return str(message)[2:-1]
+
+
+
+def list():
+    print("Sending request %s …" % __MSG_LIST)
+    socket.send_string(__MSG_LIST)
+    message = socket.recv()
+    print(f"Received reply [ {message} ]")
+    return str(message)[2:-1]

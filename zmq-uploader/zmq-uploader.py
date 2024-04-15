@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QFileDialog, QMessageBox
 from PyQt5.QtGui import QIcon,QPixmap
 from PyQt5.QtCore import pyqtSlot
 from PyQt5 import uic
@@ -8,6 +8,8 @@ import PIL
 import tempfile
 
 import previewer
+import zmqcommands
+import config
 
 class UIMain():
     currentFile = None
@@ -21,9 +23,12 @@ class UIMain():
         self.ui.menu_About.triggered.connect(self.about)
         self.ui.btnPickAFile.clicked.connect(self.pickAFile)
         self.ui.actionPick_a_File.triggered.connect(self.pickAFile)
+        self.ui.btnZMQStatus.clicked.connect(self.zmqStatus)
+        self.ui.btnZMQList.clicked.connect(self.zmqList)
 
         self.previewers.append(previewer.PreviewerImage())
 
+        self.ui.lblServerURL.setText(config.config["zmq_server"])
 
     def show(self):
         self.ui.show()
@@ -35,6 +40,12 @@ class UIMain():
 
     def about(self):
         print("about")
+
+    def zmqStatus(self):
+        QMessageBox.information(self.ui, "ZMQ Status", zmqcommands.ping())
+
+    def zmqList(self):
+        QMessageBox.information(self.ui, "ZMQ current list", zmqcommands.list())
 
     def pickAFile(self):
         options = QFileDialog.Options()
