@@ -2,6 +2,7 @@ FROM python:3.9-alpine
 
 COPY ./src /app
 COPY ./src/config.sample.py /app/config.py
+COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
 
