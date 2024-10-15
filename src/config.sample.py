@@ -1,7 +1,9 @@
 import logging
+import os
 
 myconfig = {
-    "app_port" : 55555,
+    "app_port" : int(os.getenv('SERVER_PORT', 55555)),
+
     "upload folder" : "/tmp/zmq-uploads",
 
     "logfile" : "/tmp/zmq-logs.log",

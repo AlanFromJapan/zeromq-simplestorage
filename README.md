@@ -24,3 +24,15 @@ python zmq-simplestore-server.py
 ## As a pseudo-service
 
 Add to your /etc/rc.local a call to start-service.sh
+
+## Docker service
+1. `git clone https://github.com/AlanFromJapan/zeromq-simplestorage`
+1. `copy config.sample.py config.py`
+1. Edit values of config.py
+1. `docker build -t zmq-server .`
+1. `docker run --name zmq-server-container --env SERVER_PORT=55555 -p 55555:55555 -d zmq-server`
+    - In case you provide the environment variable, it will override whatever is in the config file. Pick according your usecase.
+    - -p [host]:[container] for port mapping
+And later on:
+- `docker container stop zmq-server-container` to stop it
+- `docker container start zmq-server-container` to (re)start it
