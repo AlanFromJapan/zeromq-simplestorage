@@ -7,6 +7,7 @@ But if you have __within your home NW__, a need for a simple & anonymous storage
 ZeroMQ ==> https://zeromq.org/languages/python/
 
 # Install
+```
 git clone https://github.com/AlanFromJapan/zeromq-simplestorage.git
 cd zeromq-simplestorage
 cp config.sample.py config.py
@@ -14,6 +15,7 @@ cp config.sample.py config.py
 python3 -m venv .
 source bin/activate
 python -m pip install -r requirements.txt
+```
 
 # Run
 ## Manually
